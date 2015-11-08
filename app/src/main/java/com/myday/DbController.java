@@ -127,11 +127,51 @@ public class DbController {
                 + " WHERE " + MydayContract.Activity_entry.COL_CITY + " = " + "\"" + city + "\""
                 + " AND " + MydayContract.Activity_entry.COL_NAME + " = " + "\"" + name + "\"" + ";";
         System.out.println("fav query : " + query);
+        try {
+            open_write();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         Cursor cursor = database.rawQuery(query, null);
         System.out.println("update status : " + cursor.getCount());
         if (cursor.getCount() <= 0)
             return false;
         System.out.println("update status : " + cursor.getCount());
         return true;
+    }
+
+    public ArrayList<ActivityData> get_favorites(){
+        ArrayList<ActivityData> list = new ArrayList<>();
+        ActivityData data;
+        Cursor cursor;
+
+        String query = "SELECT * FROM " + MydayContract.Activity_entry.TABLE_NAME + " WHERE " + MydayContract.Activity_entry.COL_FAV
+                + " = " + 1 + ";";
+        System.out.println("get fav query : " + query);
+        try {
+            open_read();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        cursor = database.rawQuery(query, null);
+        cursor.moveToFirst();
+        System.out.println("favorite count : " + cursor.getCount());
+        if (cursor.getCount() > 0) {
+            do {
+                data = new ActivityData();
+                data.setName(cursor.getString(cursor.getColumnIndex(MydayContract.Activity_entry.COL_NAME)));
+                System.out.println("favorite name : " + data.getName());
+                data.setCity(cursor.getString(cursor.getColumnIndex(MydayContract.Activity_entry.COL_CITY)));
+                data.setDesc(cursor.getString(cursor.getColumnIndex(MydayContract.Activity_entry.COL_DESC)));
+                data.setDiscount(cursor.getFloat(cursor.getColumnIndex(MydayContract.Activity_entry.COL_DISCOUNT)));
+                data.setImage_url(cursor.getString(cursor.getColumnIndex(MydayContract.Activity_entry.COL_IMAGE)));
+                data.setLocation(cursor.getString(cursor.getColumnIndex(MydayContract.Activity_entry.COL_LOCATION)));
+                data.setRating(cursor.getFloat(cursor.getColumnIndex(MydayContract.Activity_entry.COL_RATING)));
+                data.setActual_price(cursor.getFloat(cursor.getColumnIndex(MydayContract.Activity_entry.COL_PRICE)));
+                list.add(data);
+            } while (cursor.moveToNext());
+        }
+        System.out.println("found fav elements : " + list.size());
+        return list;
     }
 }
