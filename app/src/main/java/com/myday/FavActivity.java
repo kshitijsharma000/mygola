@@ -31,6 +31,13 @@ public class FavActivity extends AppCompatActivity {
         ll_back_button = (LinearLayout) findViewById(R.id.fav_activity_button_back);
         recyclerView = (RecyclerView) findViewById(R.id.fav_activity_recycler_view);
 
+        ll_back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         recyclerView.addOnItemTouchListener(new DragController(this, recyclerView, new Clicklistener() {
             @Override
             public void Onclick(View view, int position) {
